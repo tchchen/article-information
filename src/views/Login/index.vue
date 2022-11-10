@@ -44,7 +44,7 @@
       </div>
     </van-form>
     <p>
-      <span>密码：246810</span>
+      <span>密码: 246810</span>
     </p>
   </div>
 </template>
@@ -78,7 +78,9 @@ export default {
         this.isLoading = false
         Notify({ type: 'success', message: '登录成功' })
         // 本地存储token
-        setToken(res.data.data.token)
+        setToken(res.data.token)
+        // 跳转到首页
+        this.$router.push('/layout/home')
       } catch (error) {
         console.log(error)
         Notify({ type: 'danger', message: '账号或密码错误' })
