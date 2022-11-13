@@ -11,15 +11,18 @@
         <article-item
           v-for="obj in articlesList"
           :key="obj.art_id"
-          :articlesInfo="obj"></article-item>
+          :articlesInfo="obj"
+          @dislikesArcticleFn="dislikesArcticleEv"
+          @reportArecleFn="reportArecleEv"></article-item>
       </van-list>
     </van-pull-refresh>
   </div>
 </template>
 
 <script>
-import { getArticleListAPI } from '@/api'
-import ArticleItem from './ArticleItem.vue'
+import { getArticleListAPI, dislikesAPI, reportArecleAPI } from '@/api'
+import { Notify } from 'vant'
+import ArticleItem from '@/components/ArticleItem.vue'
 export default {
   name: 'ArticleList',
   props: {
@@ -62,10 +65,12 @@ export default {
         channelId: this.channelId,
         timestamp: this.timestamp
       })
+      // 请求回来的时间戳为空，不再触发onload事件
       if (!res.data.pre_timestamp) {
         this.loading = false
         // 数据全部加载完成
-        return (this.finished = true)
+        this.finished = true
+        return
       }
       this.articlesList.push(...res.data.results)
       this.timestamp = res.data.pre_timestamp
@@ -81,6 +86,24 @@ export default {
       this.getArticleListFn()
       // 将 refreshing 设置为 false，表示处于不加载状态
       this.refreshing = false
+    },
+    // 自定义事件，对文章发起不感兴趣的请求
+    async dislikesArcticleEv(value) {
+      try {
+        await dislikesAPI(value)
+        Notify({ type: 'success', message: '反馈成功' })
+      } catch (error) {
+        Notify({ type: 'danger', message: '反馈失败' })
+      }
+    },
+    // 自定义事件，对文章发起举报的请求
+    async reportArecleEv(artId, type) {
+      try {
+        await reportArecleAPI(artId, type)
+        Notify({ type: 'success', message: '举报成功' })
+      } catch (error) {
+        Notify({ type: 'danger', message: '举报失败' })
+      }
     }
   }
 }

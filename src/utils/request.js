@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { getToken } from '@/utils/token'
+import { Notify } from 'vant'
+import router from '@/router'
 
 const instans = axios.create({
   baseURL: 'http://geek.itheima.net',
@@ -22,8 +24,14 @@ instans.interceptors.response.use(response => {
   // 请求成功做点什么
   return response
 }, err => {
+  console.dir(err)
+  // 身份过期，跳转到登录页
+  if (err.response.status === 401) {
+    router.replace('/login')
+    Notify({ type: 'danger', message: '身份已过期，请重新登录' })
+  }
   // 请求失败做点什么
-  return err
+  return Promise.reject(err)
 })
 
 export default ({ url, method = 'GET', data, params, headers }) => {

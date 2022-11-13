@@ -15,7 +15,11 @@ const routes = [
       { path: 'home', component: () => import('@/views/Home') },
       { path: 'user', component: () => import('@/views/User') }
     ]
-  }
+  },
+  { path: '/search', component: () => import('@/views/Search') },
+  { path: '/search_rsulte', component: () => import('@/views/Search/SearchResult') },
+  { path: '/articel_detail', component: () => import('@/views/ArticelDetail') },
+  { path: '/edit_profile', component: () => import('@/views/User/UserEdit') }
 ]
 
 const router = new VueRouter({
