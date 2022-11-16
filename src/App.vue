@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <router-view />
+    <!-- 除了exclude里对应的组件name属性，其它都缓存 -->
+    <keep-alive exclude="Search,SearchResult,Detail,UserEdit,ReadingHistory">
+      <router-view />
+    </keep-alive>
   </div>
 </template>
 

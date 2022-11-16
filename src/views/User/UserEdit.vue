@@ -95,8 +95,10 @@ export default {
       const fdObj = new FormData()
       fdObj.append('photo', e.target.files[0])
       const { data: res } = await API.user.updateUserPhotoAPI(fdObj)
-      console.log(res)
       this.userInfoObj.photo = res.data.photo
+      // 储存头像，会话储存防止，刷新vuex清空没照片
+      sessionStorage.setItem('userimg', res.data.photo)
+      this.$store.commit('SET_USERPHOTO', res.data.photo)
     },
     // 修改用户名
     editName() {

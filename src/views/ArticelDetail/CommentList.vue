@@ -84,9 +84,9 @@ export default {
       timeAgo, // 注册处理时间的方法
       isShowComtInp: true, // 是否显示评论输入框
       commentText: '', // 评论输入框的值
-      total: 0,
-      loading: false,
-      finished: false
+      total: 0, // 总评论数
+      loading: false, // 是否为加载状态
+      finished: false // 是否不再触发onLoad事件
     }
   },
   mounted() {
@@ -146,10 +146,6 @@ export default {
     },
     // 滚动到第一条评论
     commentClickFn() {
-      // const articleHeight =
-      //   document.querySelector('.article-container').scrollHeight
-      // console.log(articleHeight)
-      // window.scrollTo(0, articleHeight)
       document.querySelector('.like-box').scrollIntoView({
         behavior: 'smooth'
       })

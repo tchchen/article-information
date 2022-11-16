@@ -58,6 +58,7 @@ export default {
     },
     // 上拉刷新 , 获取当前频道的文章列表数据
     async onLoad() {
+      this.loading = false
       // 防止组件创建就执行一次
       if (this.articlesList.length === 0) return
       this.loading = true

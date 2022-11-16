@@ -6,7 +6,7 @@
       <van-cell>
         <!-- 使用 title 插槽来自定义标题 -->
         <template #icon>
-          <img :src="userProfileObj.photo" alt="" class="avatar" />
+          <img :src="$store.state.userImg || img" alt="" class="avatar" />
         </template>
         <template #title>
           <span class="username">{{ userProfileObj.name }}</span>
@@ -35,7 +35,12 @@
     <!-- 操作面板 -->
     <van-cell-group class="action-card">
       <van-cell icon="edit" title="编辑资料" is-link to="/edit_profile" />
-      <van-cell icon="chat-o" title="小思同学" is-link />
+      <van-cell
+        icon="todo-list-o"
+        title="阅读历史"
+        is-link
+        to="/read_history" />
+      <van-cell icon="chat-o" title="小思同学" is-link to="/chat" />
       <van-cell icon="warning-o" title="退出登录" is-link @click="outLogin" />
     </van-cell-group>
   </div>
@@ -51,7 +56,8 @@ export default {
   data() {
     return {
       userProfileObj: {}, // 获取用户的基本资料
-      Dialog
+      Dialog,
+      img: ''
     }
   },
   mounted() {
@@ -61,8 +67,15 @@ export default {
     // 获取用户的基本资料
     async getUserProfileObj() {
       const { data: res } = await API.user.getUserProfileAPI()
-      console.log(res)
       this.userProfileObj = res.data
+      // 如果会话存储没有用户头像
+      if (!sessionStorage.getItem('userimg')) {
+        // 储存头像
+        sessionStorage.setItem('userimg', res.data.photo)
+      }
+      // 储存头像，会话储存防止，刷新vuex清空没照片
+      this.img = sessionStorage.getItem('userimg', res.data.photo)
+      this.$store.commit('SET_USERPHOTO', res.data.photo)
     },
     // 退出登录
     outLogin() {
@@ -85,11 +98,11 @@ export default {
 <style scoped lang="less">
 .user-container {
   .user-card {
-    background-color: #007bff;
+    background-color: #0763db;
     color: white;
     padding-top: 20px;
     .van-cell {
-      background: #007bff;
+      background: #0763db;
       color: white;
       &::after {
         display: none;

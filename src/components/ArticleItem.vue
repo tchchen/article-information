@@ -1,46 +1,36 @@
 <template>
   <div>
     <!-- 一条文章单元格 -->
-    <van-cell @click="viewArticle">
+    <van-cell>
       <!-- 标题区域的插槽 -->
       <template #title>
-        <div class="title-box">
+        <div class="title-box" @click="viewArticle">
           <!-- 标题 -->
           <span>{{ articlesInfo.title }}</span>
           <!-- 单图 -->
-          <!-- <img
-            v-if="articlesInfo.cover.type == 1"
-            class="thumb"
-            :src="articlesInfo.cover.images[0]"
-            alt="" /> -->
-          <van-image
+          <img
             class="thumb"
             v-if="articlesInfo.cover.type == 1"
-            :src="articlesInfo.cover.images[0]">
-            <template v-slot:error>找不到图片</template>
-          </van-image>
+            v-lazy="articlesInfo.cover.images[0]"
+            alt="" />
         </div>
         <!-- 多图 -->
-        <div class="thumb-box" v-if="articlesInfo.cover.type > 1">
-          <!-- <img
-            v-for="(imgUrl, index) in articlesInfo.cover.images"
-            :key="index"
-            class="thumb"
-            :src="imgUrl"
-            alt="" /> -->
-          <van-image
+        <div
+          class="thumb-box"
+          v-if="articlesInfo.cover.type > 1"
+          @click="viewArticle">
+          <img
             class="thumb"
             v-for="(imgUrl, index) in articlesInfo.cover.images"
             :key="index"
-            :src="imgUrl">
-            <template v-slot:error>找不到图片</template>
-          </van-image>
+            v-lazy="imgUrl"
+            alt="" />
         </div>
       </template>
       <!-- label 区域的插槽 -->
       <template #label>
         <div class="label-box">
-          <div>
+          <div @click="viewArticle">
             <span>{{ articlesInfo.aut_name }}</span>
             <span>{{ articlesInfo.comm_count }}评论</span>
             <span>{{ timeAgo(articlesInfo.pubdate) }}</span>
@@ -71,10 +61,12 @@ import { firstActions, secondActions } from '@/api/reports' // 反馈的选项
 export default {
   name: 'ArticleItem',
   props: {
+    // 文章信息
     articlesInfo: {
       type: Object,
       defaultL: () => {}
     },
+    // 搜索结果页不显示，反馈按钮
     isShowFeedBackBtn: {
       type: Boolean,
       default: true

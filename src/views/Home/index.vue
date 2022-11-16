@@ -16,9 +16,10 @@
     <div class="main">
       <van-tabs
         v-model="channelId"
-        color="orange"
+        color="#0763db"
         sticky
-        offset-top="1.26667rem">
+        offset-top="1.2rem"
+        @change="changeChannel">
         <van-tab
           v-for="chal in channelList"
           :title="chal.name"
@@ -68,9 +69,10 @@ export default {
       channelList: [], // 储存用户选择频道
       articlesList: [], // 储存文章数据
       pre_timestamp: null, // 储存上次文章数据请求回来的时间戳
-      channelId: 0, // 频道id,tabs选择时会变化
+      channelId: 0, // 用户选择的频道id,tabs选择时会变化
       isShowPopup: false, // 是否显示添加频道的弹出层
-      allChannelList: [] // 用户为选择的频道
+      allChannelList: [], // 用户为选择的频道
+      channelScrollTopObj: {} // 储存当前频道的 id 和 滚动条滚动的距离
     }
   },
   async mounted() {
@@ -89,6 +91,15 @@ export default {
     addChannle() {
       this.isShowPopup = true
     },
+    // 切换频道时触发
+    changeChannel() {
+      // 因为这个组件在频道切换走时，会把被切换的那个容器的height设置为0，
+      // 再切换触发这个方法 dom 还没更新，高度还为0，所以要延迟赋值
+      this.$nextTick(() => {
+        document.documentElement.scrollTop =
+          this.channelScrollTopObj[this.channelId]
+      })
+    },
     // 自定义事件，关闭弹出层
     closePopupEv() {
       this.isShowPopup = false
@@ -106,8 +117,7 @@ export default {
         newObj.seq = index
         return newObj
       })
-      const res = await updateChannelAPI({ channels: theNewArr })
-      console.log(res)
+      await updateChannelAPI({ channels: theNewArr })
     },
     // 自定义事件，删除频道
     delChannelFn(obj) {
@@ -119,12 +129,37 @@ export default {
     intoChannelFn(channelId) {
       this.isShowPopup = false
       this.channelId = channelId
+    },
+    // 收集滚动条滚动高度
+    scrollFn() {
+      this.$route.meta.scrollTop = document.documentElement.scrollTop
+      // 动态添加一个键值对，频道id : 当前频道滚动条距离顶部的距离
+      this.channelScrollTopObj[this.channelId] =
+        document.documentElement.scrollTop
     }
+  },
+  // 被缓存的组件，被 切换走时 触发
+  deactivated() {
+    // 移除window 下的 scroll事件
+    window.removeEventListener('scroll', this.scrollFn)
+  },
+  // 被缓存的组件，在创建时触发一次，被 切换回来时 又触发一次
+  activated() {
+    // 给window添加一个滚动事件
+    window.addEventListener('scroll', this.scrollFn)
+    // 立刻设置滚动条的位置
+    document.documentElement.scrollTop = this.$route.meta.scrollTop
+    // 每滚动一下就存给 home路由元信息 的 scrollTop
+    // 当切换时 路由时 的那个页面 全部内容高度 超过 设备高度 就会出现滚动条
+    // 这时依然会触发 window 的 scroll 事件，因为这个 scroll事件 是绑定在window下的
+    // 如果 全部内容高度 没超过 设备高度 就不会出现滚动条，也就不会触发 window 下的 scroll事件了
   },
   computed: {
     // 计算用户为选择的频道
     notSelectedChannelList() {
+      // 所有频道
       const newArr = this.allChannelList.filter((bigObj) => {
+        // 找到被选择的频道
         const index = this.channelList.findIndex((smallObj) => {
           return smallObj.id === bigObj.id
         })
@@ -145,7 +180,7 @@ export default {
   width: 3rem;
 }
 .main {
-  padding-top: 44px;
+  padding-top: 46px;
 }
 // 设置 tabs 容器的样式
 /deep/ .van-tabs__wrap {

@@ -30,7 +30,6 @@
           }
         ]" />
       <span class="tip">若没账号可输入信息即可注册并登录</span>
-      <!-- <van-field class="tip" placeholder="若没账号可输入信息即可注册并登录" /> -->
       <div style="margin: 16px">
         <van-button
           round
@@ -79,10 +78,13 @@ export default {
         Notify({ type: 'success', message: '登录成功' })
         // 本地存储token
         setToken(res.data.token)
+        // 这个用于刷新token
+        localStorage.setItem('refresh_token', res.data.refresh_token)
         // 跳转到首页
-        this.$router.push('/layout/home')
+        this.$router.replace({
+          path: this.$route.query.path || '/layout/home'
+        })
       } catch (error) {
-        console.log(error)
         Notify({ type: 'danger', message: '账号或密码错误' })
         this.isLoading = false
       }

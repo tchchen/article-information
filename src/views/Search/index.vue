@@ -12,7 +12,7 @@
       <!-- 搜索组件 -->
       <van-search
         placeholder="请输入搜索关键词"
-        background="#007BFF"
+        background="#045D56"
         shape="round"
         v-model.trim="kw"
         v-focus
@@ -34,7 +34,7 @@
       <van-cell title="搜索历史">
         <!-- 使用 right-icon 插槽来自定义右侧图标 -->
         <template #right-icon>
-          <van-icon name="delete" class="search-icon" />
+          <van-icon name="delete" class="search-icon" @click="delHistory" />
         </template>
       </van-cell>
 
@@ -78,10 +78,9 @@ export default {
         this.suggestList = res.data.options
       }, 300)
     },
-    // 专门处理字符串高亮关键字
+    // 处理搜索建议的字符串高亮关键字
     lightFn(str, target) {
       const reg = new RegExp(target, 'ig')
-
       return str.replace(reg, (match) => {
         // match是关键字匹配的值(尽量保持原样)
         return `<span style="color: orange">${match}</span>`
@@ -99,7 +98,6 @@ export default {
     ckSearchKeyword(keyword) {
       // 给搜索历史的数组追加搜索的历史记录
       this.history.push(keyword)
-      console.log(keyword)
       // 跳转到搜索结果页
       this.jumpRouter(keyword)
     },
@@ -116,6 +114,11 @@ export default {
         // 跳转到搜索结果页
         this.jumpRouter(this.kw)
       }
+    },
+    // 删除历史搜索按钮
+    delHistory() {
+      localStorage.removeItem('searchHistory')
+      this.history = []
     }
   },
   watch: {
@@ -137,7 +140,7 @@ export default {
   height: 46px;
   display: flex;
   align-items: center;
-  background-color: #007bff;
+  background-color: #045d56;
   overflow: hidden;
   /*后退按钮*/
   .goback {
