@@ -4,6 +4,7 @@
 密码统一为：246810
 
  这是一个 vue2、vue-router、vant、axios、less 的移动端项目
+ 可以编辑频道，关注作者，对文章评论、点赞、收藏，修改个人信息，登录、退出登录
 
  使用 postcss postcss-pxtorem + amfe-flexible 实现响应式布局
 
